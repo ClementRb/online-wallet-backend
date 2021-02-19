@@ -1,0 +1,68 @@
+# Docker
+/.env
+/docker-compose.yml
+coverage
+.nyc_output
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+
+# IDE
+.idea
+
+# APP
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+ehthumbs.db
+Icon?
+Thumbs.db
+
+# Babel ES6 compiles files
+dist
+
+# node-waf configuration
+.lock-wscript
+
+# Compiled binary addons (http://nodejs.org/api/addons.html)
+build/Release
+
+# Dependency directory
+node_modules
+
+data/
+avatar/
+workbenchs/
+aggregator-results/
+unzip/
+src/workbenchs/
+src/unzip/
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+tmp
+.vscode
+-vscode-*
+
+# used by CI, should not be shared
+/src/config/env/local.js
+/connect-control/
+
+# Other
+.clever.json
+/connect-control-backend-v2.iml
+images
