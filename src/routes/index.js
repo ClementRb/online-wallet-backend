@@ -1,6 +1,8 @@
 import express from 'express';
-import userRoutes from './users';
-import authRoutes from './auth';
+import userRoutes from './users.js';
+import authRoutes from './auth.js';
+import walletRoutes from './wallet.js';
+import operationRoutes from './operations.js';
 
 const router = express.Router();
 
@@ -13,5 +15,7 @@ router.get('/api-status', (req, res) =>
 
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
+router.use('/wallets', walletRoutes);
+router.use('/operations', operationRoutes);
 
 export default router;

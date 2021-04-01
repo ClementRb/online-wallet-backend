@@ -1,4 +1,4 @@
-import config from './env';
+import config from './env/index.js';
 import jwt from 'express-jwt';
 
 const authenticate = jwt({
