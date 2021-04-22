@@ -1,58 +1,119 @@
-import User from '../models/user';
+import User from '../models/user.js';
+import Wallet from '../models/wallet.js';
+import httpStatus from 'http-status';
+import Mongoose from 'mongoose';
 
-function load(req, res, next, id) {
-    User.findById(id)
-        .exec()
-        .then(
-            (user) => {
-                req.dbUser = user;
-                return next();
-            },
-            (e) => next(e),
-        );
+async function load(req, res, next) {
+    const { userId } = req.params;
+
+    try {
+        const user = await User.findById(userId);
+
+        req.user = user;
+        return next();
+    } catch (e) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error getting user' });
+    }
 }
 
 function get(req, res) {
-    return res.json(req.dbUser);
+    const { userId } = req.params;
+
+    try {
+        User.findById(userId).then((response) => {
+            return res.status(httpStatus.OK).json(response);
+        });
+    } catch (e) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error getting user' });
+    }
 }
 
 function create(req, res, next) {
-    User.create(req.body).then(
-        (savedUser) => {
-            return res.json(savedUser);
-        },
-        (e) => next(e),
-    );
+    try {
+        User.create(req.body).then((savedUser) => {
+            return res.status(httpStatus.CREATED).json(savedUser);
+        });
+    } catch (err) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal Error' });
+    }
 }
 
-function update(req, res, next) {
-    const user = req.dbUser;
-    Object.assign(user, req.body);
+async function update(req, res, next) {
+    const userData = req.body.params;
+    const { userId } = req.params;
 
-    user.save().then(
-        (savedUser) => res.sendStatus(204),
-        (e) => next(e),
-    );
+    try {
+        const user = await User.findById(userId);
+
+        if (!user) {
+            return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Error getting user' });
+        }
+
+        if (userData.email !== user.email) {
+            const existingUser = await User.findOne({ email: userData.email });
+            if (existingUser) {
+                return res.status(httpStatus.CONFLICT).json({ message: 'This email is already in use' });
+            }
+        }
+
+        user.email = userData.email;
+        user.lastname = userData.lastname;
+        user.firstname = userData.firstname;
+        if (userData.password.length > 0) {
+            user.password = userData.password;
+        }
+
+        await user.save();
+
+        return res.status(httpStatus.OK).json(user);
+    } catch (e) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal Error' });
+    }
 }
 
 function list(req, res, next) {
     const { limit = 50, skip = 0 } = req.query;
-    User.find()
-        .skip(skip)
-        .limit(limit)
-        .exec()
-        .then(
-            (users) => res.json(users),
-            (e) => next(e),
-        );
+
+    try {
+        User.find()
+            .skip(skip)
+            .limit(limit)
+            .exec()
+            .then((users) => {
+                return res.status(httpStatus.OK).json(users);
+            });
+    } catch (err) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal Error' });
+    }
 }
 
 function remove(req, res, next) {
-    const user = req.dbUser;
-    user.remove().then(
-        () => res.sendStatus(204),
-        (e) => next(e),
-    );
+    const { userId } = req.params;
+
+    try {
+        User.deleteOne({ _id: userId }).then(() => {
+            return res.status(httpStatus.OK).json({ message: 'OK' });
+        });
+    } catch (err) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal Error' });
+    }
 }
 
-export default { load, get, create, update, list, remove };
+function getWallets(req, res, next) {
+    const { userId } = req.params;
+
+    const _id = Mongoose.Types.ObjectId(userId);
+    try {
+        Wallet.find()
+            .where('ownedBy')
+            .equals(_id)
+            .exec()
+            .then((wallets) => {
+                return res.status(httpStatus.OK).json(wallets);
+            });
+    } catch (err) {
+        return res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ message: 'Internal Error' });
+    }
+}
+
+export default { load, get, create, update, list, remove, getWallets };

@@ -2,14 +2,18 @@
     "name": "online-wallet-backend",
     "version": "1.0.0",
     "description": "",
+    "type": "module",
     "main": "index.js",
     "dependencies": {
         "bcrypt": "^5.0.0",
         "bcryptjs": "^2.4.3",
         "body-parser": "^1.19.0",
+        "cors": "^2.8.5",
         "express": "^4.17.1",
         "express-jwt": "^3.4.0",
-        "express-validation": "^3.0.6",
+        "express-validation": "^3.0.8",
+        "http-status": "^1.5.0",
+        "joi": "^17.4.0",
         "jsonwebtoken": "^7.4.3",
         "mongoose": "^5.11.17",
         "nodemon": "^2.0.7"
@@ -26,7 +30,7 @@
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "./node_modules/nodemon/bin/nodemon.js ./src/index.js"
+        "start": "./node_modules/nodemon/bin/nodemon.js --inspect index.js"
     },
     "repository": {
         "type": "git",

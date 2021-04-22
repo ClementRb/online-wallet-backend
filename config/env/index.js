@@ -1,4 +1,3 @@
-const env = process.env.NODE_ENV || 'development';
-const config = require(`./${env}`);
+import config from './development.js';
 
 export default config;

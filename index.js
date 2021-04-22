@@ -1,5 +1,5 @@
 import app from './config/express.js';
-import config from './config/env';
+import config from './config/env/index.js';
 import mongoose from 'mongoose';
 
 mongoose.connect(config.db);
